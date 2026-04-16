@@ -6,33 +6,47 @@
 /*   By: yoandria <yoandria@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 11:29:33 by yoandria          #+#    #+#             */
-/*   Updated: 2026/04/16 11:43:17 by yoandria         ###   ########.fr       */
+/*   Updated: 2026/04/17 00:00:00 by yoandria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char	*ft_read_to_left_str(int fd, char *left_str)
+static char	*ft_read_loop(int fd, char *left_str, char *buff)
 {
-	char	*buff;
 	int		rd_bytes;
 
-	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buff)
-		return (free(left_str), NULL);
 	rd_bytes = 1;
-	while (!ft_strchr(left_str, '\n') && rd_bytes != 0)
+	while (!ft_strchr(left_str, '\n') && rd_bytes > 0)
 	{
 		rd_bytes = read(fd, buff, BUFFER_SIZE);
 		if (rd_bytes == -1)
-			return (free(buff), free(left_str), NULL);
+		{
+			free(left_str);
+			return (NULL);
+		}
 		buff[rd_bytes] = '\0';
 		left_str = ft_strjoin(left_str, buff);
 		if (!left_str)
 			break ;
 	}
-	free(buff);
 	return (left_str);
+}
+
+char	*ft_read_to_left_str(int fd, char *left_str)
+{
+	char	*buff;
+	char	*result;
+
+	buff = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	if (!buff)
+	{
+		free(left_str);
+		return (NULL);
+	}
+	result = ft_read_loop(fd, left_str, buff);
+	free(buff);
+	return (result);
 }
 
 char	*ft_get_line(char *left_str)
@@ -65,8 +79,8 @@ char	*ft_get_line(char *left_str)
 
 char	*ft_new_left_str(char *left_str)
 {
-	int		i;
-	int		j;
+	size_t	i;
+	size_t	j;
 	char	*str;
 
 	i = 0;
@@ -79,7 +93,10 @@ char	*ft_new_left_str(char *left_str)
 	}
 	str = malloc(sizeof(char) * (ft_strlen(left_str) - i + 1));
 	if (!str)
-		return (free(left_str), NULL);
+	{
+		free(left_str);
+		return (NULL);
+	}
 	i++;
 	j = 0;
 	while (left_str[i])
@@ -94,7 +111,7 @@ char	*get_next_line(int fd)
 	char		*line;
 	static char	*left_str;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
 		free(left_str);
 		left_str = NULL;
