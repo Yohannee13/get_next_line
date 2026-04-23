@@ -6,7 +6,7 @@
 /*   By: yoandria <yoandria@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 11:29:33 by yoandria          #+#    #+#             */
-/*   Updated: 2026/04/17 00:00:00 by yoandria         ###   ########.fr       */
+/*   Updated: 2026/04/24 01:41:24 by yoandria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static char	*ft_read_loop(int fd, char *left_str, char *buff)
 {
-	int		rd_bytes;
+	int	rd_bytes;
 
 	rd_bytes = 1;
 	while (!ft_strchr(left_str, '\n') && rd_bytes > 0)
